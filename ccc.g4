@@ -1,104 +1,128 @@
 grammar ccc;
 
-unit        :   gen_attr+
-            |   EOF
-            ;
+unit: generic_attribution+ | EOF;
 
-command     :   ( expr | fun_call | for_loop | match_cond | ret_call ) SEMI | gen_attr;
+command: (
+		expression
+		| function_call
+		| for_loop
+		| match_conditional
+		| return_call
+	) SEMICOLON
+	| generic_attribution;
 
-assignables :   match_cond | fun_call | expr | expr_block;
+assignables:
+	match_conditional
+	| function_call
+	| expression
+	| expression_block;
 
-gen_attr    :   ID COLON type? OP_ASSING assignables SEMI ;
+generic_attribution:
+	ID COLON type_identifier? OP_ASSING assignables SEMICOLON;
 
-expr_block  :   command
-            |   LKEY command+ RKEY
-            ;
+expression_block: command | LEFTKEY command+ RIGHTKEY;
 
-type        :   fun_decl | LBRACK TYPELIST RBRACK | TYPELIST;
+type_identifier:
+	function_declaration
+	| LEFTBRACK TYPELIST RIGHTBRACK
+	| TYPELIST;
 
-fun_decl    :   'fn'
-                LPAREN
-                ( ID COLON type (COMMA ID COLON type)? )?
-                RPAREN
-                COLON type
-                ;
+function_declaration:
+	'fn' LEFTPAREN (
+		ID COLON type_identifier (COMMA ID COLON type_identifier)?
+	)? RIGHTPAREN COLON type_identifier;
 
-fun_call    :   ID 
-                LPAREN
-                (ID (COMMA ID)?)?
-                RPAREN
-                ;
+function_call: ID LEFTPAREN (ID (COMMA ID)?)? RIGHTPAREN;
 
-for_loop    :   'for' LPAREN ID COLON type 'in' ( ID | RANGE_LIT ) RPAREN expr_block;
+for_loop:
+	'for' LEFTPAREN ID COLON type_identifier 'in' (
+		ID
+		| RANGE_LITERAL
+	) RIGHTPAREN expression_block;
 
-match_cond      :   'match' LPAREN ID RPAREN LKEY match_branch+ RKEY;
-match_branch    :   'as' LPAREN ( comp ) RPAREN OP_ASSING command | 'default' OP_ASSING command;
+match_conditional:
+	'match' LEFTPAREN ID RIGHTPAREN LEFTKEY match_branch+ RIGHTKEY;
 
-ret_call    :   'ret' assignables
-            ;
+match_branch:
+	'as' LEFTPAREN (comparison) RIGHTPAREN OP_ASSING command
+	| 'default' OP_ASSING command;
 
-expr        :   lhs=expr_atom op=binary_op rhs=expr_atom
-            |   expr_atom
-            ;
+return_call: 'ret' assignables;
 
-expr_atom   :   STR_LIT | FLOAT_LIT | INT_LIT | ID ;
+expression:
+	lhs = expression_atom op = binary_operators rhs = expression_atom
+	| expression_atom;
 
-comp        :   lhs=expr op=compar_op rhs=expr ;
+expression_atom:
+	STRING_LITERAL
+	| FLOAT_LITERAL
+	| INT_LITERAL
+	| ID;
 
-arith_op    :   OP_PLUS | OP_MINUS | OP_MULT | OP_DIV | OP_EXP | OP_IDIV | OP_MOD ;
-compar_op   :   OP_VALEQ | OP_REFEQ | OP_GT | OP_LT | OP_GEQ | OP_LEQ | OP_NEQ;
-binary_op   :   arith_op | compar_op ;
+comparison:
+	lhs = expression op = comparison_operators rhs = expression;
 
-CONST       :   'const' ;
-LET         :   'let'   ;
+arithmethic_operators:
+	OP_PLUS
+	| OP_MINUS
+	| OP_MULT
+	| OP_DIV
+	| OP_EXPONENTIAL
+	| OP_INTDIV
+	| OP_MOD;
+comparison_operators:
+	OP_VAL_EQ
+	| OP_REF_EQ
+	| OP_GREATER
+	| OP_LOWER
+	| OP_GREATEREQ
+	| OP_LOWEREQ
+	| OP_NOTEQ;
 
-OP_PLUS     :   '+' ;
-OP_MINUS    :   '-' ;
-OP_MULT     :   '*' ;
-OP_DIV      :   '/' ;
-OP_MOD      :   '%' ;
-OP_NEQ      :   '!=' ;
-OP_IDIV     :   '//' ;
-OP_EXP      :   '**' ;
-OP_ASSING   :   '=' ;
-OP_VALEQ    :   '==' ;
-OP_REFEQ    :   '===' ;
-OP_GT       :   '>' ;
-OP_LT       :   '<' ;
-OP_GEQ      :   '>=' ;
-OP_LEQ      :   '<=' ;
+binary_operators: arithmethic_operators | comparison_operators;
 
-IG          :   [\t\r\n] -> skip ;
-WS          :   ' ' -> skip;
-COLON       :   ':' ; 
-SEMI        :   ';' ; 
-COMMA       :   ',' ; 
-QSMARK      :   '?' ;
-PPMARK      :   '|' ;
-DOT         :   '.' ;
-LKEY        :   '{' ;
-RKEY        :   '}' ;
-LPAREN      :   '(' ;
-RPAREN      :   ')' ;
-LBRACK      :   '[' ;
-RBRACK      :   ']' ;
-DQUOT       :   '"' ;
+CONST: 'const';
+LET: 'let';
 
-TYPELIST    :   'r64'
-            |   'r32'
-            |   'r16'
-            |   'r8'
-            |   'num'
-            |   'str'
-            ;
+OP_PLUS: '+';
+OP_MINUS: '-';
+OP_MULT: '*';
+OP_DIV: '/';
+OP_MOD: '%';
+OP_NOTEQ: '!=';
+OP_INTDIV: '//';
+OP_EXPONENTIAL: '**';
+OP_ASSING: '=';
+OP_VAL_EQ: '==';
+OP_REF_EQ: '===';
+OP_GREATER: '>';
+OP_LOWER: '<';
+OP_GREATEREQ: '>=';
+OP_LOWEREQ: '<=';
 
-STR_LIT     :   DQUOT .*? DQUOT ;
+IGNORE: [\t\r\n] -> skip;
+WHITESPACE: ' ' -> skip;
+COLON: ':';
+SEMICOLON: ';';
+COMMA: ',';
+QUESTIONMARK: '?';
+PIPEMARK: '|';
+DOT: '.';
+LEFTKEY: '{';
+RIGHTKEY: '}';
+LEFTPAREN: '(';
+RIGHTPAREN: ')';
+LEFTBRACK: '[';
+RIGHTBRACK: ']';
+DOUBLEQOUTE: '"';
 
-FLOAT_LIT   :   [0-9]+ DOT [0-9]+
-            |   DOT [0-9]+
-            ;
+TYPELIST: 'r64' | 'r32' | 'r16' | 'r8' | 'num' | 'str';
 
-RANGE_LIT   :   INT_LIT '..' INT_LIT ;
-INT_LIT     :   [0-9]+ ;
-ID          :   [a-zA-Z_]+ ;
-COMMENT     :   OP_DIV OP_MULT .*? OP_MULT OP_DIV -> skip ;
+STRING_LITERAL: DOUBLEQOUTE .*? DOUBLEQOUTE;
+
+FLOAT_LITERAL: [0-9]+ DOT [0-9]+ | DOT [0-9]+;
+
+RANGE_LITERAL: INT_LITERAL '..' INT_LITERAL;
+INT_LITERAL: [0-9]+;
+ID: [a-zA-Z_]+;
+COMMENT: OP_DIV OP_MULT .*? OP_MULT OP_DIV -> skip;
