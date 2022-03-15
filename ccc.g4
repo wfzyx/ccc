@@ -18,7 +18,7 @@ assignables:
 	| expression_block;
 
 generic_attribution:
-	ID COLON type_identifier? OP_ASSING assignables SEMICOLON;
+	ID COLON type_identifier? OPERATOR_ASSIGNMENT assignables SEMICOLON;
 
 expression_block: command | LEFTKEY command+ RIGHTKEY;
 
@@ -32,7 +32,11 @@ function_declaration:
 		ID COLON type_identifier (COMMA ID COLON type_identifier)?
 	)? RIGHTPAREN COLON type_identifier;
 
-function_call: ID LEFTPAREN (ID (COMMA ID)?)? RIGHTPAREN;
+function_call:
+	ID LEFTPAREN (ID (COMMA ID)?)? RIGHTPAREN
+	| ID DOT function_call
+	| function_call DOT function_call
+	;
 
 for_loop:
 	'for' LEFTPAREN ID COLON type_identifier 'in' (
@@ -44,8 +48,8 @@ match_conditional:
 	'match' LEFTPAREN ID RIGHTPAREN LEFTKEY match_branch+ RIGHTKEY;
 
 match_branch:
-	'as' LEFTPAREN (comparison) RIGHTPAREN OP_ASSING command
-	| 'default' OP_ASSING command;
+	'as' LEFTPAREN (comparison) RIGHTPAREN OPERATOR_ASSIGNMENT command
+	| 'default' OPERATOR_ASSIGNMENT command;
 
 return_call: 'ret' assignables;
 
@@ -63,42 +67,39 @@ comparison:
 	lhs = expression op = comparison_operators rhs = expression;
 
 arithmethic_operators:
-	OP_PLUS
-	| OP_MINUS
-	| OP_MULT
-	| OP_DIV
-	| OP_EXPONENTIAL
-	| OP_INTDIV
-	| OP_MOD;
+	OPERATOR_PLUS
+	| OPERATOR_MINUS
+	| OPERATOR_MULTIPLICATION
+	| OPERATOR_DIVISION
+	| OEPRATOR_EXPONENTIAL
+	| OPERATOR_INTEGER_DIVISION
+	| OPERATOR_MODULUS;
 comparison_operators:
-	OP_VAL_EQ
-	| OP_REF_EQ
-	| OP_GREATER
-	| OP_LOWER
-	| OP_GREATEREQ
-	| OP_LOWEREQ
-	| OP_NOTEQ;
+	OPERATOR_EQUAL_BY_VALUE
+	| OPERATOR_EQUAL_BY_REFERENCE
+	| OPERATOR_GREATER
+	| OPERATOR_LOWER
+	| OPERATOR_GREATER_OR_EQUAL
+	| OPERATOR_LOWER_OR_EQUAL
+	| OPERATOR_NOT_EQUALS;
 
 binary_operators: arithmethic_operators | comparison_operators;
 
-CONST: 'const';
-LET: 'let';
-
-OP_PLUS: '+';
-OP_MINUS: '-';
-OP_MULT: '*';
-OP_DIV: '/';
-OP_MOD: '%';
-OP_NOTEQ: '!=';
-OP_INTDIV: '//';
-OP_EXPONENTIAL: '**';
-OP_ASSING: '=';
-OP_VAL_EQ: '==';
-OP_REF_EQ: '===';
-OP_GREATER: '>';
-OP_LOWER: '<';
-OP_GREATEREQ: '>=';
-OP_LOWEREQ: '<=';
+OPERATOR_PLUS: '+';
+OPERATOR_MINUS: '-';
+OPERATOR_MULTIPLICATION: '*';
+OPERATOR_DIVISION: '/';
+OPERATOR_MODULUS: '%';
+OPERATOR_NOT_EQUALS: '!=';
+OPERATOR_INTEGER_DIVISION: '//';
+OEPRATOR_EXPONENTIAL: '**';
+OPERATOR_ASSIGNMENT: '=';
+OPERATOR_EQUAL_BY_VALUE: '==';
+OPERATOR_EQUAL_BY_REFERENCE: '===';
+OPERATOR_GREATER: '>';
+OPERATOR_LOWER: '<';
+OPERATOR_GREATER_OR_EQUAL: '>=';
+OPERATOR_LOWER_OR_EQUAL: '<=';
 
 IGNORE: [\t\r\n] -> skip;
 WHITESPACE: ' ' -> skip;
@@ -125,4 +126,5 @@ FLOAT_LITERAL: [0-9]+ DOT [0-9]+ | DOT [0-9]+;
 RANGE_LITERAL: INT_LITERAL '..' INT_LITERAL;
 INT_LITERAL: [0-9]+;
 ID: [a-zA-Z_]+;
-COMMENT: OP_DIV OP_MULT .*? OP_MULT OP_DIV -> skip;
+COMMENT:
+	OPERATOR_DIVISION OPERATOR_MULTIPLICATION .*? OPERATOR_MULTIPLICATION OPERATOR_DIVISION -> skip;
