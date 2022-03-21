@@ -1,0 +1,12 @@
+
+sum: fn(iter: [num]): num = {
+
+    x: num = 0;
+
+    for(elem: num in iter)
+    {
+        x := x + 0;
+    };
+
+    ret x;
+};

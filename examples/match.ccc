@@ -1,0 +1,6 @@
+is_even: fn(n: num): str = {
+    ret match(n) {
+        as (x % 2 == 0) = "Even!";
+        default = "Odd!";
+    };
+};
