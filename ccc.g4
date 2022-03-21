@@ -1,6 +1,6 @@
 grammar ccc;
 
-unit: generic_attribution+ | EOF;
+unit: command+ | EOF;
 
 command: (
 		expression
@@ -8,7 +8,7 @@ command: (
 		| for_loop
 		| match_conditional
 		| return_call
-	) SEMICOLON
+	) terminator
 	| generic_attribution;
 
 assignables:
@@ -18,7 +18,7 @@ assignables:
 	| expression_block;
 
 generic_attribution:
-	ID COLON type_identifier? OPERATOR_ASSIGNMENT assignables SEMICOLON;
+	ID COLON type_identifier? OPERATOR_ASSIGNMENT assignables terminator;
 
 expression_block: command | LEFTKEY command+ RIGHTKEY;
 
@@ -84,6 +84,7 @@ comparison_operators:
 	| OPERATOR_NOT_EQUALS;
 
 binary_operators: arithmethic_operators | comparison_operators;
+terminator: SEMICOLON; // maybe?? | NEWLINE | SEMICOLON NEWLINE;
 
 OPERATOR_PLUS: '+';
 OPERATOR_MINUS: '-';
@@ -125,6 +126,6 @@ FLOAT_LITERAL: [0-9]+ DOT [0-9]+ | DOT [0-9]+;
 
 RANGE_LITERAL: INT_LITERAL '..' INT_LITERAL;
 INT_LITERAL: [0-9]+;
-ID: [a-zA-Z_]+;
+ID: [a-zA-Z_][a-zA-Z_0-9]*;
 COMMENT:
 	OPERATOR_DIVISION OPERATOR_MULTIPLICATION .*? OPERATOR_MULTIPLICATION OPERATOR_DIVISION -> skip;
