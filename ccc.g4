@@ -48,13 +48,13 @@ match_conditional:
 	'match' LEFTPAREN ID RIGHTPAREN LEFTKEY match_branch+ RIGHTKEY;
 
 match_branch:
-	'as' LEFTPAREN (comparison) RIGHTPAREN OPERATOR_ASSIGNMENT command
+	'as' OPERATOR_NOT? comparison ((OPERATOR_AND | OPERATOR_OR) OPERATOR_NOT? comparison)* OPERATOR_ASSIGNMENT command
 	| 'default' OPERATOR_ASSIGNMENT command;
 
 return_call: 'ret' assignables;
 
 expression:
-	lhs = expression_atom op = binary_operators rhs = expression_atom
+	expression_atom binary_operators expression
 	| expression_atom;
 
 expression_atom:
@@ -64,7 +64,7 @@ expression_atom:
 	| ID;
 
 comparison:
-	lhs = expression op = comparison_operators rhs = expression;
+	expression comparison_operators expression;
 
 arithmethic_operators:
 	OPERATOR_PLUS
@@ -82,10 +82,17 @@ comparison_operators:
 	| OPERATOR_GREATER_OR_EQUAL
 	| OPERATOR_LOWER_OR_EQUAL
 	| OPERATOR_NOT_EQUALS;
+logical_operators:
+    OPERATOR_AND
+    | OPERATOR_OR
+    | OPERATOR_NOT;
 
-binary_operators: arithmethic_operators | comparison_operators;
-terminator: SEMICOLON; // maybe?? | NEWLINE | SEMICOLON NEWLINE;
+binary_operators: arithmethic_operators | comparison_operators | logical_operators;
+terminator: SEMICOLON;
 
+OPERATOR_AND: 'and';
+OPERATOR_OR: 'or';
+OPERATOR_NOT: 'not';
 OPERATOR_PLUS: '+';
 OPERATOR_MINUS: '-';
 OPERATOR_MULTIPLICATION: '*';
