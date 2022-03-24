@@ -45,7 +45,7 @@ class GrammarTestCase(unittest.TestCase):
             """this_is_a_var := 3;""",
             """_this_is_a_var := 3;""",
         ]
-        all(self.assertTrue(case) for case in cases)
+        all(self.assertTrue(try_parsing(case)) for case in cases)
 
 
 if __name__ == "__main__":

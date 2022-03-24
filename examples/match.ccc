@@ -1,5 +1,5 @@
 is_even: fn(x: num): str = {
-    ret: int = match(x) {
+    ret match(x) {
         as x % 2 == 0 and not 1 == 1 = "Even!";
         default = "Odd!";
     };

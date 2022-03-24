@@ -61,6 +61,7 @@ expression_atom:
 	STRING_LITERAL
 	| FLOAT_LITERAL
 	| INT_LITERAL
+	| BOOL_LITERAL
 	| ID;
 
 comparison:
@@ -90,6 +91,8 @@ logical_operators:
 binary_operators: arithmethic_operators | comparison_operators | logical_operators;
 terminator: SEMICOLON;
 
+VALUE_TRUE: 'true';
+VALUE_FALSE: 'false';
 OPERATOR_AND: 'and';
 OPERATOR_OR: 'or';
 OPERATOR_NOT: 'not';
@@ -130,7 +133,7 @@ TYPELIST: 'r64' | 'r32' | 'r16' | 'r8' | 'num' | 'str';
 STRING_LITERAL: DOUBLEQOUTE .*? DOUBLEQOUTE;
 
 FLOAT_LITERAL: [0-9]+ DOT [0-9]+ | DOT [0-9]+;
-
+BOOL_LITERAL: VALUE_TRUE | VALUE_FALSE;
 RANGE_LITERAL: INT_LITERAL '..' INT_LITERAL;
 INT_LITERAL: [0-9]+;
 ID: [a-zA-Z_][a-zA-Z_0-9]*;
